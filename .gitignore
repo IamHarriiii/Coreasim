@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.env
+*.egg-info/
+env/
+venv/
+media/
+
+# Django
+db.sqlite3
+
+# Node.js
+node_modules/
+.next/
+.env.local
+
+# System
+.DS_Store
+*.swp
+*.swo
+*.bak
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Reports or generated files
+*.pdf
