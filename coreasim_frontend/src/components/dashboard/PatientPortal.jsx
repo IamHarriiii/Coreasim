@@ -1,20 +1,34 @@
 import { useState } from 'react';
 import api from '@/utils/api';
+import Link from 'next/link';
 
 export default function PatientPortal() {
   const [patientId, setPatientId] = useState('');
   const [reportURL, setReportURL] = useState(null);
+  const [predictedDisease, setPredictedDisease] = useState(null);
   const [show3D, setShow3D] = useState(false);
+
+  const handleFetchDisease = async () => {
+    try {
+      const scans = await api.get(`eye-scans/?patient_id=${patientId}`);
+      const latestScan = scans.data[0];
+      const prediction = await api.post('predict-disease/', {
+        eye_scan_id: latestScan.id,
+      });
+      setPredictedDisease(prediction.data.predicted_disease);
+      alert(`Disease: ${prediction.data.predicted_disease}`);
+    } catch (err) {
+      alert('Failed to fetch prediction.');
+    }
+  };
 
   const handleGetReport = async () => {
     try {
-      const url = `get-report/${patientId}/`;
-      const res = await api.get(url, { responseType: 'blob' });
-
+      const res = await api.get(`get-report/${patientId}/`, { responseType: 'blob' });
       const fileURL = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       setReportURL(fileURL);
-    } catch (err) {
-      alert('Report not found or patient ID incorrect.');
+    } catch {
+      alert('Report not found');
     }
   };
 
@@ -29,24 +43,32 @@ export default function PatientPortal() {
         placeholder="Enter Your Patient ID"
         className="w-full px-4 py-2 mb-4 border rounded"
       />
-      <div className="space-x-2 mb-4">
-        <button onClick={handleGetReport} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          View My Report
+
+      <div className="space-y-3">
+        <button onClick={handleFetchDisease} className="bg-indigo-600 text-white px-4 py-2 rounded w-full">
+          Get My Predicted Disease
         </button>
-        <button onClick={() => setShow3D(!show3D)} className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-          {show3D ? "Hide" : "View"} 3D Animation
+
+        <button onClick={handleGetReport} className="bg-blue-600 text-white px-4 py-2 rounded w-full">
+          View Report
         </button>
+
+        {predictedDisease && (
+          <Link
+            href={{
+              pathname: '/simulate',
+              query: { disease: predictedDisease },
+            }}
+            className="bg-purple-600 text-white px-4 py-2 rounded block text-center hover:bg-purple-700"
+          >
+            View 3D Simulation
+          </Link>
+        )}
       </div>
 
       {reportURL && (
-        <div className="mb-4">
+        <div className="mt-4">
           <iframe src={reportURL} className="w-full h-96 border rounded" title="Patient Report" />
-        </div>
-      )}
-
-      {show3D && (
-        <div className="mt-6 h-[500px] border rounded overflow-hidden">
-          <iframe src="/simulate" className="w-full h-full" title="3D Surgery Animation" />
         </div>
       )}
     </div>
