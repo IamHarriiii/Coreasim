@@ -1,3 +1,5 @@
+//C:\Users\User\Coreasim\coreasim_frontend\src\components\three\EyeSurgeryAnimation.jsx
+
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, Html } from '@react-three/drei';
 import { Suspense, useRef, useState, useEffect } from 'react';

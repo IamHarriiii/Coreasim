@@ -1,3 +1,5 @@
+//C:\Users\User\Coreasim\coreasim_frontend\src\components\dashboard\DoctorDashboard.jsx
+
 import { useState } from 'react';
 import api from '@/utils/api';
 
